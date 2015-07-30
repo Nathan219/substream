@@ -42,12 +42,29 @@ function randomString(maxLength) {
 //
 // Listen for new connections and send data
 //
+function makeDummyStream(foo) {
+  setInterval(function () {
+    foo.write({ time: new Date().getTime(), message: randomString(400)});
+  }, process.env.interval);
+}
+
+function sendMessage(foo2, message) {
+  foo2.write({ time: new Date().getTime(), message: message});
+}
+
 primus.on('connection', function connection(spark) {
   console.log('new connection: ', spark.id);
 
-  var foo = spark.substream('foo');
+  var x = 0;
+  for (x = 0; x < process.env.numOfStrings || 100; x++) {
+    var foo = spark.substream('x' + x);
+    makeDummyStream(foo);
+  }
+  var foo2 = spark.substream('foo');
+  var count = 0;
   setInterval(function () {
-    foo.write({ time: new Date().getTime(), message: randomString(400)});
+    count++;
+    sendMessage(foo2, count);
   }, process.env.interval);
 });
 

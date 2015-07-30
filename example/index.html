@@ -8,14 +8,23 @@
     , foo = primus.substream('foo');
 
   var largestTime = 0;
+  var counter = -1;
   foo.on('data', function(data) {
+      var messageValue = parseInt(data.message);
+      console.log(data.time, messageValue, 'counter', counter);
       if (largestTime > data.time) {
           foo.off('data');
           console.log('\n\n!!!!MESSAGES RECEIVED OUT OF ORDER!!!!\n\n')
+      } else if (counter < 0) {
+          counter = messageValue + 1;
+      } else if (counter !== messageValue) {
+          foo.off('data');
+          console.log('\n\n!!!! Expected ', counter, 'but got', messageValue, '!!!!\n\n')
       } else {
           largestTime = data.time;
+          counter++;
       }
-    console.log(data.time, data.message)
+      console.log(data.time, messageValue, 'counter', counter);
   });
 </script>
 </html>
