@@ -29,7 +29,16 @@ primus = new Primus(server, { transformer: 'engine.io' });
 // Add the SubStream plugin.
 //
 primus.use('substream', require('../'));
-
+function randomString() {
+	var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+	var string_length = 8;
+	var randomstring = '';
+	for (var i=0; i<string_length; i++) {
+		var rnum = Math.floor(Math.random() * chars.length);
+		randomstring += chars.substring(rnum,rnum+1);
+	}
+	document.randform.randomfield.value = randomstring;
+}
 //
 // Listen for new connections and send data
 //
@@ -37,6 +46,10 @@ primus.on('connection', function connection(spark) {
   console.log('new connection: ', spark.id);
 
   var foo = spark.substream('foo');
+  setInterval(function () {
+    foo.write({ date: new Date(), message: randomString()});
+    })
+  });
   foo.on('data', function (data) {
     console.log('foo received:', data, ++count, spark.id);
   });
