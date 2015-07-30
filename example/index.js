@@ -37,7 +37,7 @@ function randomString() {
 		var rnum = Math.floor(Math.random() * chars.length);
 		randomstring += chars.substring(rnum,rnum+1);
 	}
-	document.randform.randomfield.value = randomstring;
+  return randomstring;
 }
 //
 // Listen for new connections and send data
@@ -47,15 +47,11 @@ primus.on('connection', function connection(spark) {
 
   var foo = spark.substream('foo');
   setInterval(function () {
-    foo.write({ date: new Date(), message: randomString()});
-    })
-  });
-  foo.on('data', function (data) {
-    console.log('foo received:', data, ++count, spark.id);
-  });
+    foo.write({ time: new Date, message: randomString()});
+  }, 100);
 });
 
 //
 // Everything is ready, listen to a port number to start the server.
 //
-server.listen(8888);
+server.listen(process.env.port);

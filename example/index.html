@@ -7,7 +7,14 @@
   var primus = new Primus()
     , foo = primus.substream('foo');
 
+  var largestTime = 0;
   foo.on('data', function(data) {
+      if (largestTime > data.time) {
+          foo.off('data');
+          console.log('\n\n!!!!MESSAGES RECEIVED OUT OF ORDER!!!!\n\n')
+      } else {
+          largestTime = data.time;
+      }
     console.log(data.time, data.message)
   });
 </script>
